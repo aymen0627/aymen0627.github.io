@@ -1,2 +1,2 @@
 # aymen0627.github.io
-Portfolio website
+Personal portfolio, highlighting some personal projects. Space-themed site, leveraging Claude and ChatGPT. 
