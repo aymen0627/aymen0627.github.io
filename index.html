@@ -3,173 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aymen Hasnain - Terminal Portfolio</title>
+    <title>Animated Portfolio</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
-            height: 100%;
-            font-family: 'Courier New', monospace;
-            background-color: #2E3440;
-            color: #D8DEE9;
             overflow: hidden;
-        }
-        #terminal {
-            width: 100%;
             height: 100%;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-        #output {
-            white-space: pre-wrap;
-        }
-        #input-line {
-            display: flex;
-            margin-top: 10px;
-        }
-        #prompt {
-            margin-right: 10px;
-            color: #88C0D0;
-        }
-        #user-input {
-            flex-grow: 1;
-            background-color: transparent;
-            border: none;
-            color: #D8DEE9;
-            font-family: inherit;
-            font-size: inherit;
-            outline: none;
-        }
-        .cursor {
-            animation: blink 1s step-end infinite;
-        }
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-        a:link {
-            color: #D8DEE9;
-        }
-        a:visited {
-            color:  yellow;
+            background-color: #000;
+            font-family: Arial, sans-serif;
+            cursor: url('spaceship.png'), auto; /* Replace 'spaceship.png' with your spaceship image path */
         }
 
+        #container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000;
+        }
+
+        #experience {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
+            text-align: left;
+            font-size: 1.2rem;
+            color: white;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        #experience h2 {
+            margin-top: 0;
+        }
+
+        #experience ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+
+        #planet-info {
+            display: none;
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.2rem;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        #back-to-space, #projects-button {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #projects-button {
+            top: auto;
+            bottom: 10px;
+        }
+
+        @keyframes zoomToPlanet {
+            0% {
+                transform: scale(1) translateZ(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(10) translateZ(-1000px);
+                opacity: 0;
+            }
+        }
+
+        .zoom-transition {
+            animation: zoomToPlanet 2s forwards;
+        }
     </style>
 </head>
 <body>
-    <div id="terminal">
-        <div id="output"></div>
-        <div id="input-line">
-            <span id="prompt">$</span>
-            <input type="text" id="user-input" autofocus>
-        </div>
+    <div id="container"></div>
+    <div id="experience">
+        <h2>Experience</h2>
+        <h3>Current Job Title - Company Name</h3>
+        <p>Location | Start Date - Present</p>
+        <ul>
+            <li>Developed and maintained features for an enterprise portal serving 1 million users.</li>
+            <li>Led the technical design and implementation of key project components.</li>
+            <li>Collaborated with cross-functional teams to deliver high-quality software solutions.</li>
+            <li>Mentored junior developers and conducted code reviews.</li>
+            <li>Improved system performance by optimizing backend processes.</li>
+        </ul>
     </div>
-
+    <div id="planet-info">Rotate the planet to explore projects.</div>
+    <div id="back-to-space">Back to Space</div>
+    <div id="projects-button">Go to Projects</div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script>
-        const output = document.getElementById('output');
-        const userInput = document.getElementById('user-input');
-        const yourName = "aymen"; 
-        const commands = {
-            help: 'Available commands: help, about, skills, projects, contact, clear, aymen',
-            about: `Hi there! I'm Aymen, a passionate software engineer with a unique blend of technical expertise and a strong drive to connect with people.
+        const container = document.getElementById('container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
 
-My journey began with a degree in Computer Engineering from the University of Central Florida, and has since led me to a career in software development.
-
-In my professional life, I've had the privilege of contributing to the development of enterprise-level portals that serve over a million users. My work involves not just coding, but also ensuring the delivery of high-quality, reliable features in agile environments. I enjoy the challenges of solving complex problems and continually push myself to stay at the forefront of technology.
-
-But there's more to me than just code. I've always been drawn to roles where I can make a direct impact on people, whether it's through customer-oriented positions or by leading projects that drive change. This desire to help others is a thread that runs through everything I do.
-
-Outside of work, I'm a firm believer in the power of continuous learning and personal development.
-
-If you share my enthusiasm for technology, innovation, I'd love to connect and collaborate!`,
-
-            skills: 'Technical Skills: HTML, CSS, JavaScript, Java, React, SQL\nTools: Git, AWS, Docker, Jira, Confluence, Bitbucket',
-            projects: '1. Led development of a customer-facing application\n2. Optimized development processes, improving team efficiency\n3. Collaborated with product owners to define and prioritize features',
-            contact: () => {
-                return `
-                    Reach out to me anytime and anyway!\n
-                    Email: <a href="mailto:aymenh0627@gmail.com" target="_blank">aymenh0627@gmail.com</a>
-                    LinkedIn: <a href="https://linkedin.com/in/aymen-hasnain" target="_blank">linkedin.com/in/aymen-hasnain</a>
-                    GitHub: <a href="https://github.com/aymen0627" target="_blank">github.com/aymen0627</a>
-                `;
-            },
-            clear: () => { output.innerHTML = ''; },
-        };
-
-        const asiiChar = `
-        ⠀⠀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣴⣶⣾⣿⣿⣿⣿⣿⣿⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠢⣄⡀⠀⠀⠀⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣄⡀⠀⠀⢀⣤⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠀⠉⠲⢦⣀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠀⠀⠀⠀⠈⠓⠦⡜⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣀⣀⣀⣀⣀⣤⣤⣄⣈⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⢸⣿⣿⣿⣿⣿⡟⠁⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⣰⣾⣿⣿⣿⣿⣿⠁⠀⠀⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠙⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⢠⣿⡿⢿⣿⣿⣿⣿⣄⠀⠀⠀⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠋⣁⢤⡈⠻⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠸⣿⣿⣿⠉⢻⣧⡀⠀⠀⠀⢻⣿⣿⣿⣿⡟⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠀⠀⠀⣀⣀⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠞⢁⣀⣻⡀⠘⢿⣿⣿⡇⠀⠻⣿⡇⠀⠀⠀⠀⠀⣿⣿⠗⠶⢤⡹⣷⡀⠀⠀⠈⣿⣿⣿⣿⡇⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⣈⡉⠉⡇⠀⠈⣿⣿⠀⠀⠀⠈⠃⠀⠀⠀⠀⠀⠹⣿⠀⠀⠀⢱⠹⣷⠀⠀⠀⢹⣿⣿⣿⡇⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⡞⢁⡙⣿⡇⠀⠀⠈⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠀⠀⠀⠈⡇⠹⡇⠀⠀⠈⣿⣿⣿⠇⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠉⠙⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⢰⠇⣄⣉⠉⠀⠀⠀⠀⠈⠀⠀⢀⡀⠀⠀⠀⠀⠀⣠⣶⣶⠀⠀⠀⠀⣿⠀⠻⠆⠀⠀⢸⣿⠟⢀⣀⣀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠀⠀⠀⠀⠈⠙⠻⢿⣿⣿⣿⣿⣿⣿⡄⠀⢸⣀⡀⣸⠏⠀⠀⠀⠀⠀⠀⠀⠀⠙⠓⠦⣄⡀⠀⣿⣿⣿⠀⠀⠀⢠⡿⠀⠀⠀⠀⠀⣼⣿⡾⠟⠻⢿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠿⣿⣿⣿⣷⣄⠀⢩⣿⣷⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠳⣤⣭⡉⠀⡀⠀⡼⠀⠀⠀⠀⠀⠀⠉⠓⠋⢻⠀⠘⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢉⡿⠃⠙⢦⡀⠙⠻⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠻⠷⣬⠛⠃⠀⠀⠀⠀⢀⣄⠀⠀⠀⡏⣠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠋⠀⠀⠀⠀⠙⢦⣀⡻⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣿⠏⠀⠀⣼⠁⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡾⠁⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡛⠛⣀⠀⣰⠃⢰⣾⣿⣿⣿⣿⣿⡉⠉⠉⠉⠙⠛
-⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠏⠀⠀⠀⠀⠀⠀⠀⠀⢳⡀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠋⠙⢧⡀⠀⠀⠀⠀⠀⠀⠈⢯⠛⢿⡻⠃⣰⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀
-⠀⠀⢀⡤⣄⣴⣶⣶⣾⣏⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢷⠘⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡏⠳⣄⠀⠙⢦⡀⠀⠘⣟⠶⢤⠈⣳⡀⠉⢲⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀
-⠀⣠⠋⠀⠈⠈⠉⠛⠻⣿⣿⣿⣶⣤⣀⠀⠀⠀⠀⠀⠀⢷⠘⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳⣄⡀⠙⠢⢤⡉⠳⣄⡈⠉⠙⠋⠉⠀⢠⡟⠀⠀⠉⠙⠛⠛⠿⢿⣿⣿⣿⣿⣆⠀
-⡽⠁⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠻⠿⣿⣿⣶⣤⣀⠀⠀⠈⢧⠈⢻⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠶⢄⣀⠙⢲⣼⠿⠀⠀⠀⠀⢠⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠿⣿⡇
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠻⢿⣿⣦⣄⠘⢧⠀⠙⣧⡀⠀⠀⠀⠀⠀⠀⠀⠒⢤⣄⡀⠈⠛⠛⠁⠀⠀⠀⢀⡴⠋⠀⠀⠀⢰⡏⠉⠻⣦⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠻⢿⣾⣦⡀⠈⠻⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⠴⠞⠉⠀⠀⠀⠀⠀⣼⠁⠀⠀⠘⣇⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠻⣶⣄⡈⠻⢦⡀⠀⠀⠀⠀⢀⣀⣤⠴⠖⠊⠉⠀⠀⠀⠀⠀⠀⠀⠀⢀⡇⠀⠀⠀⠀⣽⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⡄⣀⣠⠤⠤⠤⠤⢤⣀⣀⣀⠈⠛⢦⣄⡽⠳⠖⠚⠛⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡿⠀⠘⢷⡀⣰⡏⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡤⣶⡿⣻⡭⠓⠋⠉⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠒⠲⢬⣽⣶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⠋⠀⠀⠀⠈⢻⠋⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠉⠀⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠢⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⠃⠀⠀⠀⠀⠀⣾⣄⣀⣀⣠⣤⣤⠄⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣠⣤⣶⣶⣶⣶⣶⣿⣏⠉⠛⠲⠮⣝⡶⣄⡀⠀⠀⠀⠀⠀⠀⠀⣼⠇⠀⠲⣲⣶⡆⠀⣿⡽⠟⠶⠛⠉⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⡀⠀⠙⠻⢿⣄⠀⠀⠀⠀⢀⡼⠃⠀⠀⠀⠀⠀⠀⠀⣟⡇⠘⣿⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⢻⠀⠀⠀⢀⡞⠁⠀⠀⠀⠀⠀⠀⠀⠀⢻⠷⣄⣻⣀⣀⣀⠀⠀⠆
-⠀⠀⠀⠀⢠⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠸⣧⣤⣤⡟⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⡴⠀⠀⣤⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⣧⡀⠀⣿⠇⠀⠀⠀⠀
-⠀⠀⠀⠀⢸⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣏⢿⣿⠀⣧⠀⠀⠀⠀⠀⠀⠀⢀⣼⣷⠈⣝⠳⠭⠤⠤⠖⠒⠈
-⠀⠀⠀⠀⠘⠀⠀⠀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣼⣿⠐⣞⢧⡀⠀⠀⢀⡀⣤⢟⣹⢷⡸⠏⠀⠀⠀⣀⢀⠀⠀
-        `;
-
-        function processCommand(cmd) {
-            cmd = cmd.toLowerCase().trim();
-            if (cmd === '') return;
-            
-            output.innerHTML += `\n$ ${cmd}\n`;
-            
-            if (cmd === yourName.toLowerCase()) {
-                output.innerHTML += "Yup, that's me! Thanks for stopping by!\n" + asiiChar;
-            } else if (commands.hasOwnProperty(cmd)) {
-                if (typeof commands[cmd] === 'function') {
-                    output.innerHTML += commands[cmd]();
-                } else {
-                    output.innerHTML += commands[cmd].split('\n').map(line => line.trim()).join('\n');
-                }
-            } else {
-                output.innerHTML += `Command not found: ${cmd}. Type 'help' for available commands.`;
-            }
-            
-            output.innerHTML += '\n';
-            terminal.scrollTop = terminal.scrollHeight;
+        // Starfield setup
+        const starGeometry = new THREE.BufferGeometry();
+        const starMaterial = new THREE.PointsMaterial({ color: 0xffffff });
+        const starVertices = [];
+        for (let i = 0; i < 10000; i++) {
+            const x = (Math.random() - 0.5) * 2000;
+            const y = (Math.random() - 0.5) * 2000;
+            const z = Math.random() * 2000 - 1000;
+            starVertices.push(x, y, z);
         }
+        starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
 
-        userInput.addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                processCommand(this.value);
-                this.value = '';
-            }
+        // Planet setup (hidden initially)
+        const planetGeometry = new THREE.SphereGeometry(5, 32, 32);
+        const planetMaterial = new THREE.MeshPhongMaterial({
+            map: new THREE.TextureLoader().load('path_to_your_planet_texture.jpg'), // Replace with your planet texture
+        });
+        const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+        planet.visible = false;
+        scene.add(planet);
+
+        // Lighting for planet
+        const ambientLight = new THREE.AmbientLight(0x404040, 2);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+        directionalLight.position.set(5, 5, 5).normalize();
+        scene.add(directionalLight);
+
+        // Project Points
+        const projectPoints = [
+            { position: { x: 3, y: 2, z: 4 }, content: "Project 1: Description and details." },
+            { position: { x: -4, y: 1, z: 3 }, content: "Project 2: Description and details." },
+            { position: { x: 1, y: -3, z: -5 }, content: "Project 3: Description and details." }
+        ];
+
+        projectPoints.forEach(point => {
+            const div = document.createElement('div');
+            div.style.position = 'absolute';
+            div.style.color = 'white';
+            div.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            div.style.padding = '5px';
+            div.style.borderRadius = '5px';
+            div.innerHTML = point.content;
+            div.style.display = 'none';
+            document.body.appendChild(div);
+            point.element = div;
         });
 
-        // Initial welcome message
-        output.innerHTML = `
-Welcome to Aymen's Terminal Portfolio!
-Type 'help' for a list of available commands.
+        camera.position.z = 10;
 
-$`;
+        let inProjectSection = false;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Starfield motion
+            if (!inProjectSection) {
+                stars.geometry.attributes.position.array.forEach((_, i) => {
+                    if (i % 3 === 2) { // z-coordinate
+                        stars.geometry.attributes.position.array[i] += 2;
+                        if (stars.geometry.attributes.position.array[i] > 1000) {
+                            stars.geometry.attributes.position.array[i] -= 2000;
+                        }
+                    }
+                });
+                stars.geometry.attributes.position.needsUpdate = true;
+            }
+
+            // Rotate planet if visible
+            if (planet.visible) {
+                planet.rotation.y += 0.005;
+            }
+
+            // Position project points
+            projectPoints.forEach(point => {
+                const vector = new THREE.Vector3(point.position.x, point.position.y, point.position.z);
+                vector.applyMatrix4(planet.matrixWorld);
+                vector.project(camera);
+
+                const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+                const y = -(vector.y * 0.5 - 0.5) * window.innerHeight;
+
+                point.element.style.left = `${x}px`;
+                point.element.style.top = `${y}px`;
+
+                const distance = camera.position.distanceTo(planet.position);
+                if (distance < 15) {
+                    point.element.style.display = 'block';
+                } else {
+                    point.element.style.display = 'none';
+                }
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // "Go to Projects" Button Click Event
+        document.getElementById('projects-button').addEventListener('click', function() {
+            // Add transition effect
+            container.classList.add('zoom-transition');
+
+            setTimeout(() => {
+                container.classList.remove('zoom-transition');
+                planet.visible = true;
+                document.getElementById('planet-info').style.display = 'block';
+                document.getElementById('back-to-space').style.display = 'block';
+                stars.visible = false;
+                inProjectSection = true;
+                document.getElementById('projects-button').style.display = 'none'; // Hide the projects button
+            }, 2000); // 2-second transition
+        });
+
+        // "Back to Space" Button Click Event
+        document.getElementById('back-to-space').addEventListener('click', function() {
+            planet.visible = false;
+            document.getElementById('planet-info').style.display = 'none';
+            document.getElementById('back-to-space').style.display = 'none';
+            stars.visible = true;
+            inProjectSection = false;
+
+            projectPoints.forEach(point => {
+                point.element.style.display = 'none';
+            });
+
+            document.getElementById('projects-button').style.display = 'block'; // Show the projects button again
+        });
+
+        // Initial Display of "Go to Projects" Button
+        document.getElementById('projects-button').style.display = 'block';
+
+        // Resize listener
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
     </script>
 </body>
 </html>
